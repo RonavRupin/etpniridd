@@ -1,0 +1,41 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Mood buttons */
+.mood-btn {
+  font-size: 2.5rem;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+}
+.mood-btn.selected {
+  border-color: #4c73f3;
+  box-shadow: 0 0 0 4px #c6d9ff;
+  transform: scale(1.1);
+}
+
+/* Chat bubbles */
+.chat-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  max-width: 80%;
+}
+.flex.justify-end .chat-bubble {
+  background-color: #4c73f3;
+  color: white;
+  border-bottom-right-radius: 0.25rem;
+}
+.flex.justify-start .chat-bubble {
+  background-color: #e5e7eb;
+  color: #1f2937;
+  border-bottom-left-radius: 0.25rem;
+}
+
+/* Active Tab */
+.tab-btn.active {
+  color: #4c73f3;
+  border-color: #4c73f3;
+}
