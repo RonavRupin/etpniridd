@@ -1,41 +1,150 @@
 body {
   font-family: 'Inter', sans-serif;
-}
-
-/* Mood buttons */
-.mood-btn {
-  font-size: 2.5rem;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  background-color: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-  transition: all 0.2s;
-}
-.mood-btn.selected {
-  border-color: #4c73f3;
-  box-shadow: 0 0 0 4px #c6d9ff;
-  transform: scale(1.1);
-}
-
-/* Chat bubbles */
-.chat-bubble {
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
-  max-width: 80%;
-}
-.flex.justify-end .chat-bubble {
-  background-color: #4c73f3;
-  color: white;
-  border-bottom-right-radius: 0.25rem;
-}
-.flex.justify-start .chat-bubble {
-  background-color: #e5e7eb;
+  background-color: #f5f7fa;
+  margin: 0;
+  padding: 0;
   color: #1f2937;
-  border-bottom-left-radius: 0.25rem;
 }
 
-/* Active Tab */
-.tab-btn.active {
-  color: #4c73f3;
-  border-color: #4c73f3;
+.hidden { display: none; }
+
+/* Auth Screens */
+.auth-screen {
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  text-align: center;
 }
+
+.auth-screen input {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.auth-screen button {
+  padding: 10px;
+  width: 100%;
+  border: none;
+  background: #4c73f3;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.toggle-text span {
+  color: #4c73f3;
+  cursor: pointer;
+}
+
+.error-message { color: red; }
+.success-message { color: green; }
+
+/* Dashboard */
+.dashboard {
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+header h1 { font-size: 1.5rem; }
+header button {
+  background: #ff5252;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Tabs */
+nav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+nav button {
+  padding: 6px 12px;
+  border: none;
+  background: #e0e7ff;
+  border-radius: 8px;
+  cursor: pointer;
+}
+nav button.active {
+  background: #4c73f3;
+  color: white;
+}
+
+/* Cards */
+.card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Mood Tracker */
+.mood-card { text-align: center; }
+.mood-btn {
+  font-size: 2rem;
+  margin: 5px;
+  padding: 6px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+.mood-btn.selected { border-color: #4c73f3; transform: scale(1.2); }
+
+/* Chat */
+.chat-card { display: flex; flex-direction: column; gap: 10px; }
+#chat-log {
+  background: #f0f4f8;
+  padding: 10px;
+  border-radius: 10px;
+  height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.chat-bubble {
+  padding: 6px 10px;
+  border-radius: 12px;
+  max-width: 70%;
+}
+.bot { background: #e0e7ff; color: #1f2937; align-self: flex-start; }
+.user { background: #4c73f3; color: white; align-self: flex-end; }
+
+/* Planner */
+.planner-card {text-align:center;}
+#todo-list { list-style: none; padding: 0; margin: 10px 0; }
+#todo-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #e0e7ff;
+  padding: 6px 10px;
+  margin-bottom: 5px;
+  border-radius: 8px;
+}
+#todo-list li button {
+  background: #ff5252;
+  color: white;
+  border: none;
+  padding: 2px 6px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
