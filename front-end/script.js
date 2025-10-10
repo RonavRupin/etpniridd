@@ -1,5 +1,5 @@
-// Mock database
-const MOCK_DB = {};
+// 🌐 Backend API URL
+const API_URL = "http://localhost:5000";
 
 // Global state
 let currentUser = null;
@@ -46,11 +46,13 @@ function showDashboard() {
   registerScreen.classList.add('hidden');
   dashboardScreen.classList.remove('hidden');
 }
+
 function showLogin() {
   dashboardScreen.classList.add('hidden');
   registerScreen.classList.add('hidden');
   loginScreen.classList.remove('hidden');
 }
+
 function showRegister() {
   dashboardScreen.classList.add('hidden');
   loginScreen.classList.add('hidden');
@@ -58,28 +60,38 @@ function showRegister() {
 }
 
 function updateDashboardUI() {
-  if(!currentUser) return;
+  if (!currentUser) return;
   userDisplayName.textContent = currentUser.username;
-  academicStatusEl.textContent = currentUser.academicStatus || "No status yet";
-  const moods = {great:'Feeling Great 😄', good:'Feeling Good 😊', neutral:'Neutral 😐', sad:'A Little Down 😟', stressed:'Stressed 😰'};
+  academicStatusEl.textContent = currentUser.academicStatus || "All projects on track!";
+  const moods = {
+    great: 'Feeling Great 😄',
+    good: 'Feeling Good 😊',
+    neutral: 'Neutral 😐',
+    sad: 'A Little Down 😟',
+    stressed: 'Stressed 😰'
+  };
   moodStatusEl.textContent = moods[currentUser.moodStatus] || "Mood not set";
-  motivationQuoteEl.textContent = ["Keep going!", "You are doing great!", "Small wins count!"][Math.floor(Math.random()*3)];
+  motivationQuoteEl.textContent = [
+    "Keep going!",
+    "You are doing great!",
+    "Small wins count!"
+  ][Math.floor(Math.random() * 3)];
   moodButtons.forEach(btn => btn.classList.remove('selected'));
   const moodBtn = Array.from(moodButtons).find(b => b.dataset.mood === currentUser.moodStatus);
-  if(moodBtn) moodBtn.classList.add('selected');
+  if (moodBtn) moodBtn.classList.add('selected');
   renderTodos();
 }
 
 function renderTodos() {
-  if(!currentUser) return;
+  if (!currentUser) return;
   todoListEl.innerHTML = '';
-  if(!currentUser.todos || currentUser.todos.length === 0) {
+  if (!currentUser.todos || currentUser.todos.length === 0) {
     todoStatusEl.textContent = '';
     return;
   }
   currentUser.todos.forEach(todo => {
     const li = document.createElement('li');
-    li.innerHTML = `<span><input type="checkbox" ${todo.completed?'checked':''}> ${todo.text}</span> <button>Delete</button>`;
+    li.innerHTML = `<span><input type="checkbox" ${todo.completed ? 'checked' : ''}> ${todo.text}</span> <button>Delete</button>`;
     li.querySelector('input').addEventListener('change', () => {
       todo.completed = !todo.completed;
       updateDashboardUI();
@@ -94,32 +106,48 @@ function renderTodos() {
   todoStatusEl.textContent = `${completed}/${currentUser.todos.length} Tasks Completed`;
 }
 
-// --- Login ---
-loginForm.addEventListener('submit', e => {
-  e.preventDefault();
-  const username = loginForm.username.value.trim();
-  const password = loginForm.password.value.trim();
-  if(MOCK_DB[username] && MOCK_DB[username].password === password) {
-    currentUser = JSON.parse(JSON.stringify(MOCK_DB[username]));
-    showDashboard();
-    updateDashboardUI();
-  } else {
-    loginMessage.textContent = "Invalid username or password";
-  }
-});
-
 // --- Register ---
-registerForm.addEventListener('submit', e => {
+registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const username = document.getElementById('reg-username').value.trim();
   const password = document.getElementById('reg-password').value.trim();
-  if(MOCK_DB[username]) {
-    registerMessage.textContent = "Username exists!";
-    return;
+
+  const response = await fetch(`${API_URL}/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await response.json();
+  registerMessage.textContent = data.message;
+  if (data.success) {
+    registerMessage.style.color = "green";
+    setTimeout(showLogin, 1000);
+  } else {
+    registerMessage.style.color = "red";
   }
-  MOCK_DB[username] = {username, password, academicStatus:"All projects on track!", moodStatus:"neutral", todos:[], nextTodoId:1};
-  registerMessage.textContent = "Registered successfully! Login now.";
-  setTimeout(showLogin, 800);
+});
+
+// --- Login ---
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const username = loginForm.username.value.trim();
+  const password = loginForm.password.value.trim();
+
+  const response = await fetch(`${API_URL}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await response.json();
+  if (data.success) {
+    currentUser = { username, academicStatus: "All projects on track!", moodStatus: "neutral", todos: [], nextTodoId: 1 };
+    showDashboard();
+    updateDashboardUI();
+  } else {
+    loginMessage.textContent = data.message;
+  }
 });
 
 // --- Toggle screens ---
@@ -127,7 +155,10 @@ goRegister.addEventListener('click', showRegister);
 goLogin.addEventListener('click', showLogin);
 
 // --- Logout ---
-logoutBtn.addEventListener('click', () => { currentUser = null; showLogin(); });
+logoutBtn.addEventListener('click', () => {
+  currentUser = null;
+  showLogin();
+});
 
 // --- Tabs ---
 tabButtons.forEach(btn => {
@@ -142,7 +173,7 @@ tabButtons.forEach(btn => {
 // --- Mood ---
 moodButtons.forEach(btn => {
   btn.addEventListener('click', () => {
-    if(!currentUser) return;
+    if (!currentUser) return;
     currentUser.moodStatus = btn.dataset.mood;
     updateDashboardUI();
     moodMessage.textContent = `Mood updated to ${btn.dataset.mood}`;
@@ -155,7 +186,7 @@ moodButtons.forEach(btn => {
 chatForm?.addEventListener('submit', e => {
   e.preventDefault();
   const msg = chatInput.value.trim();
-  if(!msg) return;
+  if (!msg) return;
   const userDiv = document.createElement('div');
   userDiv.className = 'chat-bubble user';
   userDiv.textContent = msg;
@@ -174,9 +205,10 @@ chatForm?.addEventListener('submit', e => {
 todoForm?.addEventListener('submit', e => {
   e.preventDefault();
   const text = todoInput.value.trim();
-  if(!text || !currentUser) return;
-  if(!currentUser.todos) currentUser.todos = [];
-  currentUser.todos.push({id:currentUser.nextTodoId++, text, completed:false});
+  if (!text || !currentUser) return;
+  if (!currentUser.todos) currentUser.todos = [];
+  currentUser.todos.push({ id: currentUser.nextTodoId++, text, completed: false });
   todoInput.value = '';
   updateDashboardUI();
 });
+
