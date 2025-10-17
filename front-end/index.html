@@ -3,116 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wellness Dashboard</title>
+  <title>Wellness Dashboard 🌿</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Login Screen -->
-  <section id="login-screen" class="auth-screen">
-    <h1>Wellness Dashboard</h1>
-    <form id="login-form">
-      <input type="text" name="username" placeholder="Username" required>
-      <input type="password" name="password" placeholder="Password" required>
-      <button type="submit">Login</button>
-      <p class="toggle-text">Don't have an account? <span id="go-register">Register</span></p>
-      <p id="login-message" class="error-message"></p>
-    </form>
+  <!-- 🔐 Login Screen -->
+  <section id="login-screen" class="auth-screen active">
+    <div class="auth-container">
+      <h1 class="app-title">Wellness Dashboard</h1>
+      <form id="login-form" class="auth-form">
+        <input type="text" name="username" placeholder="👤 Username" required>
+        <input type="password" name="password" placeholder="🔒 Password" required>
+        <button type="submit" class="btn primary">Login</button>
+        <p class="toggle-text">
+          Don’t have an account? 
+          <span id="go-register" class="link">Register</span>
+        </p>
+        <p id="login-message" class="message"></p>
+      </form>
+    </div>
   </section>
 
-  <!-- Register Screen -->
+  <!-- 📝 Register Screen -->
   <section id="register-screen" class="auth-screen hidden">
-    <h1>Register</h1>
-    <form id="register-form">
-      <input type="text" id="reg-username" placeholder="Username" required>
-      <input type="password" id="reg-password" placeholder="Password" required>
-      <button type="submit">Register</button>
-      <p class="toggle-text">Already have an account? <span id="go-login">Login</span></p>
-      <p id="register-message" class="error-message"></p>
-    </form>
+    <div class="auth-container">
+      <h1>Create Account</h1>
+      <form id="register-form" class="auth-form">
+        <input type="text" id="reg-username" placeholder="👤 Username" required>
+        <input type="password" id="reg-password" placeholder="🔒 Password" required>
+        <button type="submit" class="btn primary">Register</button>
+        <p class="toggle-text">
+          Already have an account? 
+          <span id="go-login" class="link">Login</span>
+        </p>
+        <p id="register-message" class="message"></p>
+      </form>
+    </div>
   </section>
 
-  <!-- Dashboard -->
+  <!-- 💻 Dashboard -->
   <section id="dashboard-screen" class="hidden dashboard">
-    <header>
-      <h1>Welcome, <span id="user-display-name"></span></h1>
-      <button id="logout-btn">Logout</button>
+    <header class="dashboard-header">
+      <h1>Welcome, <span id="user-display-name">User</span> 👋</h1>
+      <button id="logout-btn" class="btn danger">Logout</button>
     </header>
 
-    <!-- Navigation Tabs -->
-    <nav>
-      <button data-page="dashboard" class="tab-btn active">Dashboard</button>
-      <button data-page="mood" class="tab-btn">Mood</button>
-      <button data-page="chat" class="tab-btn">Chat</button>
-      <button data-page="planner" class="tab-btn">Planner</button>
+    <!-- 📱 Navigation Tabs -->
+    <nav class="tabs">
+      <button data-page="dashboard" class="tab-btn active">🏠 Dashboard</button>
+      <button data-page="mood" class="tab-btn">😊 Mood</button>
+      <button data-page="chat" class="tab-btn">💬 Chat</button>
+      <button data-page="planner" class="tab-btn">🗓️ Planner</button>
     </nav>
 
-    <!-- Pages -->
-    <div id="page-container">
+    <!-- 📋 Pages Container -->
+    <main id="page-container">
 
-      <!-- Dashboard -->
-      <div id="dashboard-content" class="page-content">
-        <div class="card">
-          <h2>Academic Status</h2>
-          <p id="academic-status">Loading...</p>
+      <!-- Dashboard Page -->
+      <section id="dashboard-content" class="page-content active">
+        <div class="grid">
+          <div class="card">
+            <h2>📚 Academic Status</h2>
+            <p id="academic-status">All projects on track!</p>
+          </div>
+          <div class="card">
+            <h2>💭 Current Mood</h2>
+            <p id="mood-status">Feeling Great 😄</p>
+          </div>
+          <div class="card">
+            <h2>💡 Motivation</h2>
+            <p id="motivation-quote">Keep going — you’re doing amazing!</p>
+          </div>
         </div>
-        <div class="card">
-          <h2>Current Mood</h2>
-          <p id="mood-status">Loading...</p>
-        </div>
-        <div class="card">
-          <h2>Motivation</h2>
-          <p id="motivation-quote">Loading...</p>
-        </div>
-      </div>
+      </section>
 
       <!-- Mood Tracker -->
-      <div id="mood-content" class="page-content hidden">
+      <section id="mood-content" class="page-content hidden">
         <div class="card mood-card">
-          <h2>How are you feeling?</h2>
-          <div id="mood-buttons">
+          <h2>How are you feeling today?</h2>
+          <div id="mood-buttons" class="mood-grid">
             <button data-mood="great" class="mood-btn">😄</button>
             <button data-mood="good" class="mood-btn">😊</button>
             <button data-mood="neutral" class="mood-btn">😐</button>
             <button data-mood="sad" class="mood-btn">😟</button>
             <button data-mood="stressed" class="mood-btn">😰</button>
           </div>
-          <p id="mood-message" class="success-message hidden"></p>
+          <p id="mood-message" class="message hidden"></p>
         </div>
-      </div>
+      </section>
 
-      <!-- Chat -->
-      <div id="chat-content" class="page-content hidden">
+      <!-- Chat Assistant -->
+      <section id="chat-content" class="page-content hidden">
         <div class="card chat-card">
-          <h2>Chat</h2>
-          <div id="chat-log">
-            <div class="chat-bubble bot">Hello! I'm your wellness assistant.</div>
+          <h2>💬 Wellness Chat</h2>
+          <div id="chat-log" class="chat-log">
+            <div class="chat-bubble bot">Hi there! I’m your wellness assistant 🌸</div>
           </div>
-          <form id="chat-form">
+          <form id="chat-form" class="chat-form">
             <input type="text" id="chat-input" placeholder="Type a message..." required>
-            <button type="submit">Send</button>
+            <button type="submit" class="btn">Send</button>
           </form>
         </div>
-      </div>
+      </section>
 
-      <!-- Planner -->
-      <div id="planner-content" class="page-content hidden">
+      <!-- To-Do Planner -->
+      <section id="planner-content" class="page-content hidden">
         <div class="card planner-card">
-          <h2>To-Do List</h2>
-          <form id="todo-form">
+          <h2>🗓️ Daily Planner</h2>
+          <form id="todo-form" class="todo-form">
             <input type="text" id="todo-input" placeholder="Add a task..." required>
-            <button type="submit">Add</button>
+            <button type="submit" class="btn">Add</button>
           </form>
-          <ul id="todo-list"></ul>
-          <p id="todo-status"></p>
+          <ul id="todo-list" class="todo-list"></ul>
+          <p id="todo-status" class="status-text"></p>
         </div>
-      </div>
+      </section>
 
-    </div>
+    </main>
   </section>
 
   <script src="script.js"></script>
 </body>
 </html>
-
-
