@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Signup.css";
+import axios from 'axios'
 
 export default function Signup() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    gender: "",
+    password: "",
+  });
+
+  const handleChange = async(e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    const response=await axios.post('http://localhost/5000/user/signup',formData)
+    if(response){
+        console.log(formData)
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Signing up...");
+    console.log("Form submitted:", formData);
+    // You can send formData to your backend here
   };
 
   return (
@@ -14,17 +36,34 @@ export default function Signup() {
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <label>Name</label>
-            <input type="text" name="name" required />
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="input-group">
             <label>Email</label>
-            <input type="email" name="email" required />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="input-group">
             <label>Gender</label>
-            <select name="gender" required>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              required
+            >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -34,7 +73,13 @@ export default function Signup() {
 
           <div className="input-group">
             <label>Password</label>
-            <input type="password" name="password" required />
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <button type="submit" className="signup-btn">
