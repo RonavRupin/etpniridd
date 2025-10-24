@@ -7,7 +7,7 @@ const dbconnection=mongoose.connect(process.env.MONGO_URI)
 .then(()=>{
     console.log("database connected")
 })
-//this is used to catch the error if any
+
 .catch((err)=>{
     console.log("database connection failed ", err)
 })
