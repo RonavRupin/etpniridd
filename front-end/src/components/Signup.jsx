@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Signup.css";
-import axios from 'axios'
+import axios from "axios";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -8,25 +8,40 @@ export default function Signup() {
     email: "",
     gender: "",
     password: "",
+    confirmPassword: "",
   });
 
-  const handleChange = async(e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-
-    const response=await axios.post('http://localhost/5000/user/signup',formData)
-    if(response){
-        console.log(formData)
-    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // You can send formData to your backend here
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:5000/user/signup", {
+        name: formData.name,
+        email: formData.email,
+        gender: formData.gender,
+        password: formData.password,
+      });
+
+      if (response.status === 200) {
+        console.log("Signup successful:", response.data);
+        // Optionally redirect or clear form
+      }
+    } catch (error) {
+      console.error("Signup failed:", error);
+    }
   };
 
   return (
@@ -65,9 +80,9 @@ export default function Signup() {
               required
             >
               <option value="">Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
             </select>
           </div>
 
@@ -77,6 +92,17 @@ export default function Signup() {
               type="password"
               name="password"
               value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
               onChange={handleChange}
               required
             />
