@@ -1,10 +1,13 @@
+//this is the database connection code for mongodb
 import mongoose from "mongoose";
 import dotenv from "dotenv"
 dotenv.config()
+//this is the connection part
 const dbconnection=mongoose.connect(process.env.MONGO_URI)
 .then(()=>{
     console.log("database connected")
 })
+//this is used to catch the error if any
 .catch((err)=>{
     console.log("database connection failed ", err)
 })
