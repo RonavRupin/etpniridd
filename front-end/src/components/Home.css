@@ -1,17 +1,27 @@
+
 .home-container {
   font-family: "Poppins", sans-serif;
   min-height: 100vh;
   background-color: #f4f7f6;
+  color: #333;
 }
+
+/* Header/Navbar */
 .home-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 1rem 2.5rem;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-.home-header h1 { font-size: 1.5rem; color: #333; }
+
+.home-header h1 {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0;
+}
+
 .logout-btn {
   background-color: #d9534f;
   color: white;
@@ -19,29 +29,106 @@
   border: none;
   border-radius: 6px;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s;
 }
-.logout-btn:hover { background-color: #c9302c; }
-.dashboard-content { padding: 2rem; }
-.welcome-message {
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 10px;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+.logout-btn:hover {
+  background-color: #c9302c;
 }
-.feature-grid {
+
+/* Main content area */
+.dashboard-main {
+  padding: 2rem 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Base styles for all "cards" */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+/* Integrated Dashboard card */
+.integrated-dashboard h2 {
+  margin-top: 0;
+}
+
+.status-grid {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-item strong {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.status-item span {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #007bff;
+}
+
+/* Chatbot section */
+.chatbot-section h2 {
+  margin-top: 0;
+}
+
+.chatbot-placeholder {
+  min-height: 100px;
+  background-color: #f9f9f9;
+  border: 1px dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  margin: 1rem 0;
+  border-radius: 8px;
+}
+
+.chat-btn,
+.feature-card button {
+  background-color: #007bff;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 0.5rem;
+}
+
+.chat-btn:hover,
+.feature-card button:hover {
+  background-color: #0056b3;
+}
+
+/* Grid for the other features */
+.features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
+
 .feature-card {
-  background: #fff;
-  padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  cursor: pointer;
-  transition: transform 0.2s;
+  margin-bottom: 0;
 }
-.feature-card:hover { transform: translateY(-5px); }
+
+.feature-card h3 {
+  margin-top: 0;
+}
