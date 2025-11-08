@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import axios from 'axios'
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   // const handleSubmit = (e) => { ...
   // const handleSubmit = (e) => {
@@ -28,10 +30,8 @@ const handleSubmit = async (e) => {
     // 2. If it works, the backend sends back data.
     //    Based on authController.js, this will be response.data.data.token
     console.log('Login successful!', response.data);
-    alert('Login Successful! Welcome, ' + response.data.data.name);
-
-    // TODO: Save response.data.data.token to local storage
-    // TODO: Redirect to the dashboard page
+ localStorage.setItem('token', response.data.data.token);
+ navigate('/');
 
  
   } catch (error) {
