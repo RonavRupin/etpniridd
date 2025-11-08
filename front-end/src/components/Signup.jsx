@@ -19,15 +19,18 @@ export default function Signup() {
     }));
   };
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 1. Check if passwords match (client-side check)
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
 
     try {
+      // 2. Send the data to the backend
       const response = await axios.post("http://localhost:5000/user/signup", {
         name: formData.name,
         email: formData.email,
@@ -35,12 +38,28 @@ export default function Signup() {
         password: formData.password,
       });
 
-      if (response.status === 200) {
-        console.log("Signup successful:", response.data);
-        // Optionally redirect or clear form
-      }
+      // 3. Handle success
+      console.log("Signup successful:", response.data);
+      alert('Signup successful! ' + response.data.message);
+      
+      // TODO: Redirect to the /login page
+      // (You can use 'useNavigate' hook from 'react-router-dom' for this)
+
     } catch (error) {
-      console.error("Signup failed:", error);
+      // 4. Handle all possible errors
+      if (error.response) {
+        // The backend *did* respond, but with an error (e.g., "User already exists")
+        console.error('Backend Error:', error.response.data);
+        alert('Signup Failed: ' + (error.response.data.message || 'Unknown error from backend.'));
+      } else if (error.request) {
+        // The request was *made*, but we got *no response*.
+        console.error('Network Error:', error.request);
+        alert('Signup Failed: Cannot connect to server. Is the backend running?');
+      } else {
+        // Something else went wrong setting up the request
+        console.error('Frontend Error:', error.message);
+        alert('Signup Failed: ' + error.message);
+      }
     }
   };
 

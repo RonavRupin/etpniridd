@@ -1,23 +1,58 @@
-import React from "react";//import
+import React, { useState } from "react";
 import "./Login.css";
 import axios from 'axios'
 export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // const handleSubmit = (e) => { ...
   // const handleSubmit = (e) => {
   //   e.preventDefault();
     
   //   console.log("Logging in...");
-  // };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // TODO: This is where the integration is missing.
-    // 1. Get the 'email' and 'password' from the form's state.
-    // 2. Use 'axios' to send a POST request to the backend's login endpoint
-    //    (e.g., 'http://localhost:5000/api/auth/login').
-    // 3. Handle the response (e.g., save the token, redirect to dashboard).
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    console.log("Logging in... (but not really, backend isn't called yet)");
-  };
+  console.log("Attempting to log in with:", email); // We use our new 'email' state
+
+  try {
+    // 1. Send the email and password (from state) to the backend
+    const response = await axios.post(
+      'http://localhost:5000/user/login', // This URL is confirmed by authRoutes.js
+      {
+        email: email,       // This comes from your useState
+        password: password  // This also comes from your useState
+      }
+    );
+
+    // 2. If it works, the backend sends back data.
+    //    Based on authController.js, this will be response.data.data.token
+    console.log('Login successful!', response.data);
+    alert('Login Successful! Welcome, ' + response.data.data.name);
+
+    // TODO: Save response.data.data.token to local storage
+    // TODO: Redirect to the dashboard page
+
+ 
+  } catch (error) {
+    // This new 'catch' block is much smarter.
+
+    if (error.response) {
+      // The backend *did* respond, but with an error (401, 404, 500)
+      console.error('Backend Error:', error.response.data);
+      alert('Login Failed: ' + (error.response.data.message || 'Unknown error from backend.'));
+    } else if (error.request) {
+      // The request was *made*, but we got *no response*.
+      // This is 99% a CORS error or the backend isn't running.
+      console.error('Network Error:', error.request);
+      alert('Login Failed: Cannot connect to server. Is the backend running? (Check CORS)');
+    } else {
+      // Something else went wrong setting up the request
+      console.error('Frontend Error:', error.message);
+      alert('Login Failed: ' + error.message);
+    }
+  }
+};
 
   return (
     <div className="login-container">
@@ -26,12 +61,24 @@ export default function Login() {
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <label>Email</label>
-            <input type="email" name="email" required />
+            <input 
+  type="email" 
+  name="email" 
+  required 
+  value={email} 
+  onChange={(e) => setEmail(e.target.value)}
+/>
           </div>
 
           <div className="input-group">
             <label>Password</label>
-            <input type="password" name="password" required />
+            <input 
+  type="password" 
+  name="password" 
+  required 
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+/>
           </div>
 
           <button type="submit" className="login-btn">
