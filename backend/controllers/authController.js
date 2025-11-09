@@ -268,43 +268,110 @@ export const getAllUsers = async (req, res) => {
 // @desc    Chat with AI
 // @route   POST /user/chat
 // @access  Private
+// export const chat = async (req, res) => {
+//   try {
+//     // console.log("Key from .env:", process.env.GEMINI_API_KEY);
+//     // --- DEBUG LINES ---
+// console.log("--- DEBUGGING API KEY ---");
+// console.log(JSON.stringify(process.env.GEMINI_API_KEY));
+// console.log("-------------------------");
+// // -------------------
+//     // 1. GET THE USER'S MESSAGE
+//     const userMessage = req.body.message;
+//     if (!userMessage) {
+//       return res.status(400).json({ success: false, message: "Please provide a message" });
+//     }
+
+//     // 2. GET THE "CONTEXT" (THE USER'S DATA)
+//     //    (The 'protect' middleware already gave us req.user.id)
+//     const user = await User.findById(req.user.id).select('-password');
+//     if (!user) {
+//       return res.status(404).json({ success: false, message: "User not found" });
+//     }
+
+//     // 3. BUILD THE "SECRET PROMPT"
+//     //    This is where we inject the context!
+//     const systemPrompt = `You are a helpful and empathetic student wellbeing assistant.
+//     The user's name is ${user.name}.
+//     You are part of a web app that has a 'Mood Tracker' and 'Study Plans'.
+//     Keep your answers concise and supportive. When appropriate,
+//     gently suggest one of the app's features.
+
+//     CONTEXT:
+//     User's Name: ${user.name}
+//     User's Email: ${user.email}
+
+//     USER'S MESSAGE:
+//     ${userMessage}`;
+
+//     // const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+//     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+//     const result = await model.generateContent(systemPrompt);
+//     const response = await result.response;
+//     const aiMessage = await response.text();
+
+//     // 5. SEND THE AI'S RESPONSE BACK
+//     res.status(200).json({
+//       success: true,
+//       message: aiMessage
+//     });
+
+//   } catch (error) {
+//     console.error("Chatbot error:", error); // For your own debugging
+//     res.status(500).json({
+//       success: false,
+//       message: "Error communicating with AI. " + error.message
+//     });
+//   }
+// };
+// @desc    Chat with AI
+// @route   POST /user/chat
+// @access  Private
 export const chat = async (req, res) => {
   try {
-    // console.log("Key from .env:", process.env.GEMINI_API_KEY);
-    // --- DEBUG LINES ---
-console.log("--- DEBUGGING API KEY ---");
-console.log(JSON.stringify(process.env.GEMINI_API_KEY));
-console.log("-------------------------");
-// -------------------
-    // 1. GET THE USER'S MESSAGE
-    const userMessage = req.body.message;
-    if (!userMessage) {
+    // --- NEW: Get history and the message ---
+    const { message, history } = req.body; 
+    
+    if (!message) {
       return res.status(400).json({ success: false, message: "Please provide a message" });
     }
 
     // 2. GET THE "CONTEXT" (THE USER'S DATA)
-    //    (The 'protect' middleware already gave us req.user.id)
     const user = await User.findById(req.user.id).select('-password');
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
+    // --- NEW: Format the chat history into a string ---
+    // We'll loop through the history array and build a simple text log.
+    let formattedHistory = "";
+    if (history && history.length > 0) {
+      formattedHistory = history
+        .map(msg => `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.text}`)
+        .join('\n');
+    }
+    // ------------------------------------------------
+
     // 3. BUILD THE "SECRET PROMPT"
-    //    This is where we inject the context!
+    //    We now inject BOTH the context AND the history.
     const systemPrompt = `You are a helpful and empathetic student wellbeing assistant.
     The user's name is ${user.name}.
     You are part of a web app that has a 'Mood Tracker' and 'Study Plans'.
     Keep your answers concise and supportive. When appropriate,
     gently suggest one of the app's features.
-
+    
     CONTEXT:
     User's Name: ${user.name}
     User's Email: ${user.email}
 
-    USER'S MESSAGE:
-    ${userMessage}`;
-
-    // const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    --- PREVIOUS CHAT HISTORY ---
+    ${formattedHistory}
+    --- END OF HISTORY ---
+    
+    USER'S NEW MESSAGE:
+    ${message}`;
+    
+    // 4. CALL THE AI
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
     const result = await model.generateContent(systemPrompt);
     const response = await result.response;
@@ -317,7 +384,7 @@ console.log("-------------------------");
     });
 
   } catch (error) {
-    console.error("Chatbot error:", error); // For your own debugging
+    console.error("Chatbot error:", error); 
     res.status(500).json({
       success: false,
       message: "Error communicating with AI. " + error.message
