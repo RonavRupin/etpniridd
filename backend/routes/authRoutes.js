@@ -6,7 +6,8 @@ import {
     updateProfile, 
     deleteProfile,
     logout,
-    getAllUsers 
+    getAllUsers,
+    chat//added
 } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -21,6 +22,7 @@ router.get('/profile', protect, getProfile);
 router.put('/profile', protect, updateProfile);
 router.delete('/profile', protect, deleteProfile);
 router.post('/logout', protect, logout);
+router.post('/chat', protect, chat);//add
 
 // Admin route (add admin middleware if needed)
 router.get('/users', protect, getAllUsers);
