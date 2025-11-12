@@ -205,3 +205,49 @@
   background-color: #aaa;
   cursor: not-allowed;
 }
+/* --- ADD THESE STYLES FOR THE MOOD TRACKER --- */
+
+.mood-form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mood-input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.mood-input-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #555;
+}
+
+.mood-input-group select,
+.mood-input-group input {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: "Poppins", sans-serif;
+}
+
+.mood-log-btn {
+  background-color: #28a745; /* Green color for success */
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 0.5rem;
+}
+
+.mood-log-btn:hover {
+  background-color: #218838;
+}

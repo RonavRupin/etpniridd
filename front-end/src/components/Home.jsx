@@ -1,44 +1,64 @@
-
-import React, { useState, useEffect } from 'react'; // Import useState and useEffect
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Import axios
+import axios from 'axios';
 import './Home.css'; 
 
 export default function Home() {
   const navigate = useNavigate();
 
-  // --- NEW CHATBOT STATE ---
-  const [chatMessage, setChatMessage] = useState(""); // Holds the user's current typed message
-  const [chatHistory, setChatHistory] = useState([]); // Holds the array of chat messages
-  const [isLoading, setIsLoading] = useState(false); // For a simple loading indicator
-  const [userName, setUserName] = useState("User"); // To store the user's name
-  // -------------------------
+  // --- EXISTING STATE ---
+  const [chatMessage, setChatMessage] = useState(""); 
+  const [chatHistory, setChatHistory] = useState([]); 
+  const [isLoading, setIsLoading] = useState(false); 
+  const [userName, setUserName] = useState("User"); 
+  
+  // === NEW MOOD TRACKER STATE ===
+  const [mood, setMood] = useState(3); // Default mood rating (1-5)
+  const [moodNote, setMoodNote] = useState(""); // Optional note
+  const [moodHistory, setMoodHistory] = useState([]); // To store all mood logs
+  const [lastMood, setLastMood] = useState(null); // To display on the dashboard
+  // ==============================
 
-  // --- NEW: Fetch User's Profile (for Context) ---
-  // We'll use this to get the user's name for the welcome message
+  // --- FETCH USER DATA ---
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
+
+    // 1. Fetch User's Profile
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          navigate('/login'); // Not logged in, kick to login
-          return;
-        }
-
-        // Call the 'getProfile' endpoint we already built
-        const response = await axios.get('http://localhost:5000/user/profile', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        
-        setUserName(response.data.data.name); // Store the user's name
-
+        const response = await axios.get('http://localhost:5000/user/profile', authHeaders);
+        setUserName(response.data.data.name); 
       } catch (error) {
         console.error("Failed to fetch profile", error);
-        localStorage.removeItem('token'); // Bad token, clear it
+        localStorage.removeItem('token'); 
         navigate('/login');
       }
     };
+
+    // === 2. NEW: Fetch Mood History ===
+    const fetchMoods = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/moods', authHeaders);
+        setMoodHistory(response.data.data);
+        if (response.data.data.length > 0) {
+          // Save the most recent mood to state
+          setLastMood(response.data.data[0]); 
+        }
+      } catch (error) {
+        console.error("Failed to fetch moods", error);
+      }
+    };
+    // ==================================
+
     fetchProfile();
+    fetchMoods(); // Call the new function
+    
   }, [navigate]);
   // ----------------------------------------------
 
@@ -47,11 +67,37 @@ export default function Home() {
     navigate('/login');
   };
 
-  // --- NEW: Handle Chat Submit ---
+  // --- CHATBOT SUBMIT ---
   const handleChatSubmit = async (e) => {
     e.preventDefault();
-    if (chatMessage.trim() === "") return; // Don't send empty messages
+    if (chatMessage.trim() === "") return; 
+    const token = localStorage.getItem('token');
+    // ... (rest of your chat submit code) ...
+    const newUserMessage = { sender: 'user', text: chatMessage };
+    setChatHistory(prev => [...prev, newUserMessage]);
+    setChatMessage(""); 
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/user/chat',
+        { message: chatMessage, history: chatHistory }, 
+        { headers: { Authorization: `Bearer ${token}` } } 
+      );
+      const aiMessage = { sender: 'ai', text: response.data.message };
+      setChatHistory(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Chatbot error:", error);
+      const errorMessage = { sender: 'ai', text: "Sorry, I'm having trouble connecting. Please try again." };
+      setChatHistory(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  // -------------------------------
 
+  // === NEW: MOOD LOG SUBMIT ===
+  const handleMoodSubmit = async (e) => {
+    e.preventDefault();
     const token = localStorage.getItem('token');
     if (!token) {
       alert("You are not logged in.");
@@ -59,39 +105,36 @@ export default function Home() {
       return;
     }
 
-    // 1. Add user's message to chat history immediately
-    const newUserMessage = { sender: 'user', text: chatMessage };
-    setChatHistory(prev => [...prev, newUserMessage]);
-    setChatMessage(""); // Clear the input box
-    setIsLoading(true);
-
     try {
-      // 2. Send the message to the new backend endpoint
+      // 1. Send the new mood to the backend
       const response = await axios.post(
-        'http://localhost:5000/user/chat',
-        { message: chatMessage,
-          history: chatHistory
-         }, // The message from our state
-        { headers: { Authorization: `Bearer ${token}` } } // The "key"
+        'http://localhost:5000/api/moods',
+        { 
+          mood: mood,
+          note: moodNote
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      // 3. Add the AI's response to chat history
-      const aiMessage = { sender: 'ai', text: response.data.message };
-      setChatHistory(prev => [...prev, aiMessage]);
+      
+      // 2. Update the UI immediately
+      alert("Mood logged successfully!");
+      setMoodNote(""); // Clear the note
+      
+      // 3. Add the new mood to the top of our lists
+      const newMoodLog = response.data.data;
+      setMoodHistory(prev => [newMoodLog, ...prev]);
+      setLastMood(newMoodLog);
 
     } catch (error) {
-      console.error("Chatbot error:", error);
-      const errorMessage = { sender: 'ai', text: "Sorry, I'm having trouble connecting. Please try again." };
-      setChatHistory(prev => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false); // Stop the loading indicator
+      console.error("Mood logging failed:", error);
+      alert("Failed to log mood: " + error.response.data.message);
     }
   };
-  // -------------------------------
+  // ============================
 
   // Dummy data
   const academicStatus = "Good Standing";
-  const moodLevel = "4/5 (Feeling Good)";
+  // We don't need the old 'moodLevel' dummy data
 
   return (
     <div className="home-container">
@@ -105,8 +148,9 @@ export default function Home() {
 
       <main className="dashboard-main">
         
+        {/* === UPDATED: Integrated Dashboard === */}
         <section className="integrated-dashboard card">
-          <h2>Welcome, {userName}!</h2> {/* <-- We now use the user's real name */}
+          <h2>Welcome, {userName}!</h2>
           <p>This is your central hub for academic and mental wellbeing.</p>
           <div className="status-grid">
             <div className="status-item">
@@ -115,16 +159,18 @@ export default function Home() {
             </div>
             <div className="status-item">
               <strong>Last Mood Log:</strong>
-              <span>{moodLevel}</span>
+              {/* This now shows REAL data from our 'lastMood' state */}
+              <span>
+                {lastMood ? `${lastMood.mood}/5` : 'No logs yet'}
+              </span>
             </div>
           </div>
         </section>
+        {/* =================================== */}
 
-        {/* --- THIS IS THE NEW CHATBOT UI --- */}
         <section className="chatbot-section card">
+          {/* Your chatbot UI goes here - no changes needed */}
           <h2>AI Emotional Support Chatbot</h2>
-          <p>Feeling overwhelmed? Talk to our AI assistant for immediate, private support.</p>
-          
           <div className="chat-window">
             {chatHistory.map((msg, index) => (
               <div key={index} className={`chat-message ${msg.sender}`}>
@@ -133,11 +179,10 @@ export default function Home() {
             ))}
             {isLoading && (
               <div className="chat-message ai loading">
-                <p>...</p> {/* Simple loading dots */}
+                <p>...</p> 
               </div>
             )}
           </div>
-          
           <form className="chat-input-form" onSubmit={handleChatSubmit}>
             <input
               type="text"
@@ -151,26 +196,57 @@ export default function Home() {
             </button>
           </form>
         </section>
-        {/* ---------------------------------- */}
 
         <section className="features-grid">
+          
+          {/* === UPDATED: Mood Tracker Feature === */}
           <div className="feature-card card">
             <h3>Mood Tracker</h3>
             <p>Log your daily mood and see your trends over time.</p>
-            <button>Log Today's Mood</button>
+            
+            {/* This is the new form that logs the mood */}
+            <form onSubmit={handleMoodSubmit} className="mood-form">
+              <div className="mood-input-group">
+                <label>How are you feeling? (1-5)</label>
+                <select 
+                  value={mood} 
+                  onChange={(e) => setMood(Number(e.target.value))}
+                >
+                  <option value={1}>1 (Awful)</option>
+                  <option value={2}>2 (Bad)</option>
+                  <option value={3}>3 (Okay)</option>
+                  <option value={4}>4 (Good)</option>
+                  <option value={5}>5 (Great)</option>
+                </select>
+              </div>
+              
+              <div className="mood-input-group">
+                <label>Add a short note (optional)</label>
+                <input 
+                  type="text"
+                  placeholder="e.g., Finished my assignment!"
+                  value={moodNote}
+                  onChange={(e) => setMoodNote(e.target.value)}
+                />
+              </div>
+              
+              <button type="submit" className="mood-log-btn">Log Today's Mood</button>
+            </form>
           </div>
+          {/* =================================== */}
+
           <div className="feature-card card">
             <h3>Study Plans</h3>
             <p>Get study plans based on your wellbeing and academic data.</p>
-            <button>View Plans</button>
+            <button disabled>View Plans</button> {/* Disabled for now */}
           </div>
+
           <div className="feature-card card">
             <h3>Calmness & Breaks</h3>
             <p>Take a guided meditation or a short break exercise.</p>
-            <button>Take a Break</button>
+            <button disabled>Take a Break</button> {/* Disabled for now */}
           </div>
         </section>
-
       </main>
     </div>
   );
