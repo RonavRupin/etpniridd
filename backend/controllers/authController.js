@@ -1,4 +1,6 @@
 import MoodLog from '../models/MoodSchema.js';
+import StudyTask from '../models/StudyTaskSchema.js'; // <--- ADD THIS LINE
+
 import User from '../models/UserSchema.js';
 import jwt from 'jsonwebtoken';
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -288,9 +290,20 @@ export const chat = async (req, res) => {
     const lastMood = await MoodLog.findOne({ user: req.user.id }).sort({ createdAt: 'desc' });
     
     // =========================================
+    // C) NEW: Get Study Tasks
+    const tasks = await StudyTask.find({ user: req.user.id }).sort({ isCompleted: 1, createdAt: 'desc' });
+    // =========================================
 
 
     // --- Format the chat history into a string ---
+    // --- NEW: Format Tasks into a string ---
+    let tasksText = "No study tasks currently.";
+    if (tasks.length > 0) {
+      tasksText = tasks.map(t => 
+        `- [${t.isCompleted ? 'DONE' : 'TODO'}] ${t.task}`
+      ).join('\n');
+    }
+    // -------------------------------------
     let formattedHistory = "";
     if (history && history.length > 0) {
       formattedHistory = history
@@ -313,6 +326,11 @@ export const chat = async (req, res) => {
     --- USER'S LATEST MOOD LOG ---
     ${lastMood ? `Mood: ${lastMood.mood}/5, Note: "${lastMood.note}"` : "User has not logged their mood yet."}
     --- END OF MOOD LOG ---
+    --- STUDY PLAN (TO-DO LIST) ---
+    ${tasksText}
+    --- END OF STUDY PLAN ---
+
+  T --- PREVIOUS CHAT HISTORY ---
 
     --- PREVIOUS CHAT HISTORY ---
     ${formattedHistory}

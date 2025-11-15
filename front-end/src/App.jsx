@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Home from "./components/Home";
 import ProtectedRoute from "./components/ProtectedRoute"; // 1. Import the bouncer
+import Calmness from "./components/Calmness"; // <--- 1. ADD THIS IMPORT
 
 export default function App() {
   return (
@@ -23,6 +24,10 @@ export default function App() {
               <Home />
             </ProtectedRoute>
           } 
+        />
+        <Route 
+          path="/calm" 
+          element={<ProtectedRoute><Calmness /></ProtectedRoute>} 
         />
 
         {/* These routes are for guests */}

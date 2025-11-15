@@ -1,0 +1,177 @@
+.calm-container {
+  font-family: "Poppins", sans-serif;
+  min-height: 100vh;
+  /* background-color: #f4f7f6; */
+  /* here */
+  background-image: url('/scenic.jpg'); /* This points to the file in your 'public' folder */
+  background-size: cover; /* Makes the image cover the whole screen */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+
+ .calm-card {
+  /* This is the new "frosted glass" effect */
+  background: rgba(255, 255, 255, 0.10); /* 85% transparent white */
+  backdrop-filter: blur(10px); /* This blurs the scenery behind it */
+  -webkit-backdrop-filter: blur(10px); /* For Safari browser support */
+  
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Adds a subtle edge */
+  padding: 2rem 2.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  max-width: 600px;
+  width: 100%;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.calm-card h2 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.breathing-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.step {
+  /* background-color: #f9f9f9; */
+    background: rgba(255, 255, 255, 0.80); /* 85% transparent white */
+
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+.step strong {
+  font-size: 1.1rem;
+  color: #007bff;
+}
+
+.step p {
+  margin: 0.5rem 0 0 0;
+  color: #555;
+}
+
+.subtext {
+  text-align: center;
+  color: #1a1a1a;
+  font-style: italic;
+}
+/* --- ADD THESE FOR THE FEEDBACK/QUOTE SECTION --- */
+
+.post-exercise-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.3); /* Match our frosted glass border */
+}
+
+.post-exercise-section h3 {
+  text-align: center;
+  margin-top: 0;
+  color: #1a1a1a; /* This is a very dark, almost-black */
+}
+
+.post-exercise-section p {
+  text-align: center;
+  color: #1a1a1a; /* This is a dark gray */
+}
+
+.prompt-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.prompt-btn {
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.yes-btn {
+  background-color: #28a745; /* Green */
+  color: white;
+}
+.yes-btn:hover {
+  background-color: #218838;
+}
+
+.no-btn {
+  background-color: #f0f0f0; /* Light gray */
+  color: #333;
+}
+.no-btn:hover {
+  background-color: #ddd;
+}
+
+/* Styles for the new areas */
+.feedback-area,
+.quote-area {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.05); /* Slightly darker box */
+  border-radius: 8px;
+}
+
+.feedback-options {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.feedback-options button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.feedback-options button:hover {
+  background-color: #0056b3;
+}
+
+.quote-area {
+  text-align: center;
+}
+
+.quote-text {
+  font-size: 1.3rem;
+  font-style: italic;
+  color: black;
+  margin: 0;
+}
+
+.quote-text span {
+  display: block;
+  font-style: normal;
+  font-weight: 600;
+  color: black;
+  margin-top: 0.75rem;
+}

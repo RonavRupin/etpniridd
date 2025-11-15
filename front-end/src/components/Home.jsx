@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import { useNavigate,Link } from 'react-router-dom';
 import axios from 'axios';
 import './Home.css'; 
 
@@ -17,6 +18,9 @@ export default function Home() {
   const [moodNote, setMoodNote] = useState(""); // Optional note
   const [moodHistory, setMoodHistory] = useState([]); // To store all mood logs
   const [lastMood, setLastMood] = useState(null); // To display on the dashboard
+  // new study task state
+  const [studyTasks, setStudyTasks] = useState([]); // Holds all study tasks
+  const [newTask, setNewTask] = useState("");
   // ==============================
 
   // --- FETCH USER DATA ---
@@ -54,10 +58,20 @@ export default function Home() {
         console.error("Failed to fetch moods", error);
       }
     };
+    // === 3. NEW: Fetch Study Tasks ===
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/study', authHeaders);
+        setStudyTasks(response.data.data); // Save tasks to state
+      } catch (error) {
+        console.error("Failed to fetch study tasks", error);
+      }
+    };
     // ==================================
 
     fetchProfile();
     fetchMoods(); // Call the new function
+    fetchTasks(); // <-- ADD THIS
     
   }, [navigate]);
   // ----------------------------------------------
@@ -131,6 +145,70 @@ export default function Home() {
     }
   };
   // ============================
+  // === NEW: STUDY TASK HANDLERS ===
+
+  // Creates a new task
+  const handleTaskSubmit = async (e) => {
+    e.preventDefault();
+    if (newTask.trim() === "") return;
+    const token = localStorage.getItem('token');
+    
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/api/study',
+        { task: newTask },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      setStudyTasks(prev => [...prev, response.data.data]); // Add new task to state
+      setNewTask(""); // Clear input
+      
+    } catch (error) {
+      console.error("Failed to create task", error);
+      alert("Failed to add task: " + error.response.data.message);
+    }
+  };
+
+  // Toggles a task's "isCompleted" status
+  const handleTaskToggle = async (id, currentStatus) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/study/${id}`,
+        { isCompleted: !currentStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      // Update the task in our local state
+      setStudyTasks(prev => 
+        prev.map(task => 
+          task._id === id ? response.data.data : task
+        )
+      );
+      
+    } catch (error) {
+      console.error("Failed to update task", error);
+    }
+  };
+
+  // Deletes a task
+  const handleTaskDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this task?")) return;
+    const token = localStorage.getItem('token');
+    
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/study/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      // Remove the task from our local state
+      setStudyTasks(prev => prev.filter(task => task._id !== id));
+      
+    } catch (error) {
+      console.error("Failed to delete task", error);
+    }
+  };
 
   // Dummy data
   const academicStatus = "Good Standing";
@@ -157,13 +235,20 @@ export default function Home() {
               <strong>Academic Status:</strong>
               <span>{academicStatus}</span>
             </div>
+            
             <div className="status-item">
-              <strong>Last Mood Log:</strong>
-              {/* This now shows REAL data from our 'lastMood' state */}
-              <span>
-                {lastMood ? `${lastMood.mood}/5` : 'No logs yet'}
-              </span>
-            </div>
+  <strong>Last Mood Log:</strong>
+  <span 
+    className={
+      !lastMood ? 'mood-none' :
+      lastMood.mood <= 2 ? 'mood-low' :
+      lastMood.mood === 3 ? 'mood-mid' :
+      'mood-high'
+    }
+  >
+    {lastMood ? `${lastMood.mood}/5` : 'No logs yet'}
+  </span>
+</div>
           </div>
         </section>
         {/* =================================== */}
@@ -201,7 +286,7 @@ export default function Home() {
           
           {/* === UPDATED: Mood Tracker Feature === */}
           <div className="feature-card card">
-            <h3>Mood Tracker</h3>
+            <h3>📊Mood Tracker</h3>
             <p>Log your daily mood and see your trends over time.</p>
             
             {/* This is the new form that logs the mood */}
@@ -235,16 +320,55 @@ export default function Home() {
           </div>
           {/* =================================== */}
 
+          
+          {/* === UPDATED: Study Plans Feature === */}
           <div className="feature-card card">
-            <h3>Study Plans</h3>
-            <p>Get study plans based on your wellbeing and academic data.</p>
-            <button disabled>View Plans</button> {/* Disabled for now */}
+            <h3>📝Study Plans (To-Do)</h3>
+            <p>Add study tasks to stay organized.</p>
+            
+            {/* 1. The Form to Add New Tasks */}
+            <form onSubmit={handleTaskSubmit} className="task-input-form">
+              <input
+                type="text"
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
+                placeholder="New study task..."
+              />
+              <button type="submit">+</button>
+            </form>
+            
+            {/* 2. The List of Tasks */}
+            <div className="task-list">
+              {studyTasks.length === 0 ? (
+                <p className="no-tasks">No tasks yet. Add one!</p>
+              ) : (
+                studyTasks.map(task => (
+                  <div key={task._id} className={`task-item ${task.isCompleted ? 'completed' : ''}`}>
+                    <input 
+                      type="checkbox"
+                      checked={task.isCompleted}
+                      onChange={() => handleTaskToggle(task._id, task.isCompleted)}
+                    />
+                    <span className="task-text">{task.task}</span>
+                    <button 
+                      onClick={() => handleTaskDelete(task._id)} 
+                      className="delete-btn"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
+          {/* =================================== */}
 
           <div className="feature-card card">
-            <h3>Calmness & Breaks</h3>
+            <h3>🧘Calmness & Breaks</h3>
             <p>Take a guided meditation or a short break exercise.</p>
-            <button disabled>Take a Break</button> {/* Disabled for now */}
+            <Link to="/calm" className="feature-btn">
+          Take a Break
+        </Link>
           </div>
         </section>
       </main>
