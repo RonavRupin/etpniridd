@@ -6,15 +6,14 @@
   padding: 2rem;
   font-family: "Poppins", sans-serif;
 
-  /* Use the same background as your other pages */
-  background-image: url('/dashboard-bg.jpg'); /* Use your image name */
+  background-image: url('/dashboard-bg.jpg'); 
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
 }
 
 .landing-card {
-  /* Frosted glass effect */
+  
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -53,7 +52,7 @@
 }
 
 .landing-btn {
-  flex: 1; /* Make both buttons equal width */
+  flex: 1; 
   padding: 0.8rem 1.5rem;
   border-radius: 8px;
   text-decoration: none;
@@ -64,7 +63,7 @@
 
 .landing-btn.login {
   /* Frosted Blue Effect */
-  background: rgba(0, 123, 255, 0.4); /* 70% transparent blue */
+  background: rgba(0, 123, 255, 0.8); 
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   border: 1px solid rgba(0, 123, 255, 0.5);
@@ -72,20 +71,20 @@
   color: white;
 }
 .landing-btn.login:hover {
-  background: rgba(0, 86, 179, 0.8); /* Darker blue */
+  background: rgba(0, 86, 179, 0.8); 
   border-color: rgba(0, 86, 179, 1);
 }
 
 .landing-btn.signup {
   /* Frosted White Effect */
-  background: rgba(0, 123, 255, 0.4); /* 70% transparent white */
+  background: rgba(0, 123, 255, 0.8); 
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.5);
 
-  color: white; /* Dark text for a light button */
+  color: white; 
 }
 .landing-btn.signup:hover {
-  background: rgba(0, 86, 179, 0.8); /* Darker blue */
+  background: rgba(0, 86, 179, 0.8); 
   border-color: rgba(0, 86, 179, 1);
 }
