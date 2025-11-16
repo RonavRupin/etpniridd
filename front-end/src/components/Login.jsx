@@ -31,7 +31,7 @@ const handleSubmit = async (e) => {
     //    Based on authController.js, this will be response.data.data.token
     console.log('Login successful!', response.data);
  localStorage.setItem('token', response.data.data.token);
- navigate('/');
+ navigate('/home');
 
  
   } catch (error) {
